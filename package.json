@@ -1,0 +1,15 @@
+{
+  "name": "nzubechukwu",
+  "version": "1.0.0",
+  "description": "my nodejs project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "desmond nzubechukwu abugu",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
+  }
+}
