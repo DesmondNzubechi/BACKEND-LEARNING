@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require("morgan");
+const userRouter = require('./Routes/userRouter')
 
 const app = express();
 
@@ -11,23 +12,8 @@ app.use((req, res, next) => {
 })
 
 
-const port = 3000;
 
-app.post('/app/v1/realtor', (req, res) => {
+app.use('/users', userRouter)
 
-    res.send()
-})
 
-app.get('/app/v1/realtor/:id', (req, res) => {
-    res.status(200).json({
-        status: "success",
-        result: {},
-        data: {
-            
-        }
-    })
-})
-
-app.listen(port, () => {
-    console.log(`App running on port ${port}`)
-})
+module.exports = app;

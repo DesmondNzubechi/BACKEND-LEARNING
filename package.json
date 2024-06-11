@@ -2,14 +2,19 @@
   "name": "nzubechukwu",
   "version": "1.0.0",
   "description": "my nodejs project",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "desmond nzubechukwu abugu",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "express": "^4.19.2",
-    "morgan": "^1.10.0"
+    "mongodb": "^6.7.0",
+    "morgan": "^1.10.0",
+    "validator": "^13.12.0"
   }
 }
