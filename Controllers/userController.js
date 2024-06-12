@@ -1,8 +1,9 @@
 const User = require('../Models/userModel')
-const catchAsync = require('../Controllers/utils/catchAsync')
+const catchAsync = require('../Controllers/utils/catchAsync');
+const { equals } = require('validator');
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-    const users = await User.find(req.body);
+    const users = await User.find();
 
     res.status(200).json({
         status: 'success',
@@ -38,7 +39,7 @@ exports.updateAUser = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteAUser = catchAsync(async (req, res, next) => {
-    const user = User.findByIdAndDelete(req.body.id);
+    const user = await User.findByIdAndDelete(req.body.id);
 
     res.status(200).json({
         status: "success",
@@ -49,6 +50,19 @@ exports.deleteAUser = catchAsync(async (req, res, next) => {
     })
 })
 
-exports.createAUser = async (req, res, next) => {
-
-}
+exports.createAUser = catchAsync(async (req, res, next) => {
+    const user = await User.create({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        confirmPassword : req.body.confirmPassword
+    })
+     
+    res.status(200).json({
+        status: "success",
+        message: "User succesfully created",
+        data: {
+            user : user
+        }
+    })
+})

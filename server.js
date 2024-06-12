@@ -1,4 +1,5 @@
 const { default: mongoose } = require('mongoose');
+const User = require('./Models/userModel')
 const app = require('./app');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
@@ -12,7 +13,8 @@ mongoose.connect(DB, {
     console.log('Connected to the database')
 }).catch(err => {
     console.log(err, "an error occured")
-})
+}) 
+
 
 const port = process.env.PORT;
 

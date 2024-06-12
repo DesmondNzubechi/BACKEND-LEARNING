@@ -9,35 +9,38 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: {
         type: String,
-        unique: [true, "A iser already existed with this name"],
         require : [true, 'Please insert your full name']
     },
     email: {
         type: String,
         unique: [true, 'This email is already signed in, please try login if you are the owner of the email.'],
         require: [true, "Please input your email"],
+        lowercase : true,
         validate : [validator.isEmail, 'Chose a valid email'], 
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin'], 
         default : "user"
     },
+    photo : String,
     password: {
         type: String,
-        require: [true, "Kindly provide your password"],
+        required: [true, "Kindly provide your password"],
+        minlength: 8,
+        select: false,
     },
     confirmPassword: {
         type: String,
-        require: [true, "please confirm your password"],
-        validator: (el) => {
+        required: [true, "please confirm your password"],
+        validator: function(el) {
             return el === this.password
         },
         message: "Password are not the same"
     },
     passwordChangedat: Date,
     passwordResetToken: String,
-    passwordResetTokenExpires: Date,
+    passwordResetTokenExpires: Date, 
     active: {
         type: Boolean,
         default: true,
@@ -58,7 +61,11 @@ userSchema.pre('save', async function (next) {
     next();
 })
 
-
+//compare the inputed password with the original user password
+userSchema.method.correctPassword = async function(candidatePassword, userPassword) {
+    
+    return await bcript.compare(candidatePassword, userPassword)
+}
 
 const User = mongoose.model('users', userSchema);
-module.exports = User;
+module.exports = User; 

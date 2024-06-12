@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "desmond nzubechukwu abugu",
@@ -13,8 +14,10 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.7.0",
     "morgan": "^1.10.0",
+    "ndb": "^1.1.5",
     "validator": "^13.12.0"
   }
 }
