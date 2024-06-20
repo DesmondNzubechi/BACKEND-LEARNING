@@ -1,19 +1,15 @@
 const { default: mongoose } = require('mongoose');
-const User = require('./Models/userModel')
 const app = require('./app');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD)
 
-mongoose.connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology : true,
-}).then(con => {
+mongoose.connect(DB).then(con => {
     console.log('Connected to the database')
 }).catch(err => {
     console.log(err, "an error occured")
-}) 
+})  
 
 
 const port = process.env.PORT;

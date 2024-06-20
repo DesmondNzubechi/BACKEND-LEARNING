@@ -1,6 +1,9 @@
+//USER CONTROLLER
+
 const User = require('../Models/userModel')
 const catchAsync = require('../Controllers/utils/catchAsync');
-const { equals } = require('validator');
+const AppError = require('../Errors/appError');
+
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const users = await User.find();
@@ -38,6 +41,7 @@ exports.updateAUser = catchAsync(async (req, res, next) => {
     })
 })
 
+
 exports.deleteAUser = catchAsync(async (req, res, next) => {
     const user = await User.findByIdAndDelete(req.body.id);
 
@@ -45,9 +49,9 @@ exports.deleteAUser = catchAsync(async (req, res, next) => {
         status: "success",
         message: "successfully deleted",
         data: {
-            user : null
+            user : null  
         }
-    })
+    }) 
 })
 
 exports.createAUser = catchAsync(async (req, res, next) => {
@@ -57,7 +61,7 @@ exports.createAUser = catchAsync(async (req, res, next) => {
         password: req.body.password,
         confirmPassword : req.body.confirmPassword
     })
-     
+      
     res.status(200).json({
         status: "success",
         message: "User succesfully created",
@@ -66,3 +70,39 @@ exports.createAUser = catchAsync(async (req, res, next) => {
         }
     })
 })
+
+const filterObj = (obj, ...allowedField) => {
+    Object.keys(obj).forEach(el => {
+        if (allowedField.includes(el)) newObj[el] = obj[el]
+    });
+    return newObj
+}
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+     
+    const { id, name, email, password, confirmPassword } = req.body;
+
+    if (password || confirmPassword) {
+        return next(new AppError("This is not route for updating password", 400))
+    }
+
+    //2) filter user
+    const filterdBody = filterObj(req.body, "name", "email")
+
+    //3) update user
+    const updatedUser = User.findByIdAndUpdate( id, filterdBody, {
+        new: true,
+        runValidators: true
+        } );
+       
+    res.status(200).json({
+        status: "success",
+        data: {
+            user : updatedUser
+        }
+    })
+})
+    
+
+
+
