@@ -17,6 +17,17 @@ const signToken = id => {
 const createAndSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
 
+    const cookieOptions = {
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+        httpOnly : true
+    }
+
+    if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+    res.cookie("jwt", token, cookieOptions)
+
+    user.password = undefined;
+    
     res.status(statusCode).json({
         status: "success",
         token, 
@@ -221,38 +232,43 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
 
 exports.resetPassword = catchAsync(async(req, res, next) => {
-    //1) Get the user based on the token
+    // Get the user based on the token
+    const { token } = req.params;
+    
     const hashedToken = crypto.
         createHash("sha256")
-        .update(req.params.token)
+        .update(token)
         .digest("hex");
     
     const user = await User.findOne({
         passwordResetToken: hashedToken,
         passwordResetExpires: { $gt: Date.now() }
     })
+
+    const { password, confirmPassword, passwordResetToken, passwordResetExpires } = user
     
-    //2) if the token has not expired, and there is user, set the password
+    
+    // if the token has not expired, and there is user, set the password
     if (!user) {
     return next(new AppError("Token is invalid or has expired", 400))
     }
     
-    user.password = req.body.password;
-    user.confirmPassword = req.body.confirmPassword;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+   
+    password = req.body.password;
+    confirmPassword = req.body.confirmPassword;
+    passwordResetToken = undefined;
+    passwordResetExpires = undefined;
 
     await user.save();
-    //3) updateChangedPasswordAt property for the user
 
-    //4) 
+    // Login user, create new JWT
 
-//     const token = signToken(user.id);
-//     res.status(200).json({
-//         status: 'success',
-//         token
-// })
-createAndSendToken(newUser, 200, res)
+    const newToken = signToken(user.id);
+    res.status(200).json({
+        status: 'success',
+        newToken
+})
+
 })
 
 

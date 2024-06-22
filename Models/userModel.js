@@ -74,6 +74,12 @@ userSchema.pre("save", function (next) {
     next()
 })
 
+
+userSchema.pre(/^find/, function (next) {
+    this.find({ active: {$ne : false} })
+    next()
+})
+
 //compare the inputed password with the original user password
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
     
