@@ -95,7 +95,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     const updatedUser = User.findByIdAndUpdate( id, filterdBody, {
         new: true,
         runValidators: true
-        } );
+        } ); 
        
     res.status(200).json({
         status: "success",

@@ -17,17 +17,25 @@ const signToken = id => {
 const createAndSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
 
+
+    
+    const { NODE_ENV, JWT_COOKIE_EXPIRES_IN } = process.env;
+
+
     const cookieOptions = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-        httpOnly : true
+        expires: new Date(Date.now() + JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+        httpOnly: true,
     }
 
     if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
     res.cookie("jwt", token, cookieOptions)
 
+
+
+
     user.password = undefined;
-    
+
     res.status(statusCode).json({
         status: "success",
         token, 
@@ -80,13 +88,6 @@ exports.loginUser = catchAsync(async (req, res, next) => {
         return next(new AppError("Incorrect Email or password", 401))
     }
  
-//3. if everything is okay, login
-    // const token = signToken(user._id)
-    // res.status(201).json({
-    //     status: 'success',
-    //     message: "successfully log in",
-    //     token
-    // })
     createAndSendToken(user, 200, res)
     
 })
@@ -108,11 +109,11 @@ exports.protectedRoute = catchAsync(async (req, res, next) => {
     }
 
     //2. verifying token
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const { JWT_SECRET } = process.env;
+    const decoded = await promisify(jwt.verify)(token, JWT_SECRET);
     console.log(decoded)
     
     //3. check if user still exist
-
     const freshUser = await User.findById(decoded.id)
     if (!freshUser) {
         return next(new AppError("The user that has this token does no longer exist", 401))
@@ -144,46 +145,6 @@ exports.restrictTo = (...role) => {
 }
 
 
-
-
-// exports.forgotPassword = catchAsync(async (req, res, next) => {
-
-//     //1) Get the user base on POSTed email
-//     const user = await User.findOne({ email: req.body.email });
-
-//     if (!user) {
-//         return next(new AppError("User does not exist", 404))
-//     }
-
-//     //2) Generate the random reset token
-//     const resetToken = user.createPasswordResetToken()
-//     await user.save({validateBeforeSave : false});
-   
-//     //3) Send it to the user's email
-//     const resetURL = `${req.protocol}://${res.get('host')}/api/v1/users/resetPassword/${resetToken}`
-
-//     const message = `Forget your password? Submit a PATCH resquest with your new password and passwordConfirm to: ${resetURL}.\nif you did forget your password, please ignore this email.`
-// try {
-//     await sendEmail({
-//         email: user.email,
-//         subject: 'Your password reset token valid for 10 minutes',
-//         message
-//     })
-
-//     res.status(200).json({
-//         status: "success",
-//         message : "token sent to email"
-//     })
-// } catch (error) {
-//     user.passwordResetToken = undefined;
-//     user.passwordExpires = undefined;
-
-//     await user.save({validateBeforeSave : false});
-
-//     return next(new AppError("There was an error sending this email, please try again later", 500))
-// }
-    
-// })
 
 
 

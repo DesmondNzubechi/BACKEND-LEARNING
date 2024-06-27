@@ -20,11 +20,11 @@ if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"))
 }
 
-//limit request from the same API
+
 const limiter = rateLimit({
     max: 1000,
-    windowMs: 60 * 60 * 1000,
-    message: "Too many request from this IP, please try again in the next hour."
+    window: 60 * 60 * 1000,
+    message: "Too many request from this IP. Please try again"
 })
 app.use("/", limiter)
 
@@ -39,9 +39,16 @@ app.use(mongoSanitize())
 app.use(xss())
 
 //prevent parameter pollution
-// app.use(hpp({
-//     whitelist : []
-// }))
+app.use(hpp({
+    whitelist: [
+        "duration",
+        "ratingQuantity",
+        "ratingsAverage",
+        "maxGroupSize",
+        "difficulty",
+        "price"
+    ]
+}))
 
 //test middleware
 app.use((req, res, next) => {
